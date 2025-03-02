@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 
-Permissions-Policy: accelerometer=<allowlist>;
 
 <html lang="en">
 <head>
@@ -8,8 +7,11 @@ Permissions-Policy: accelerometer=<allowlist>;
 	<link rel="stylesheet" type="text/css" href="./css/rollout.css">
 </head>
 <body>
+	<p id="accel" style="font-size: 2rem"></p>
+	<p id="vel" style="font-size: 2rem"></p>
 	<div class="root flex">
 		<div id="sqr" class="flex">
+			<div id="world" class="flex" style="position: relative;"></div>
 			<img id="playerBall" src="./img/playerBall0.png" style="z-index=10">
 		</div>
 	</div>
@@ -17,70 +19,6 @@ Permissions-Policy: accelerometer=<allowlist>;
 	</div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-<script>
-	function permission () {
-		if ( typeof( DeviceMotionEvent ) !== "undefined" && typeof( DeviceMotionEvent.requestPermission ) === "function" ) {
-			// (optional) Do something before API request prompt.
-			DeviceMotionEvent.requestPermission().then( response => {
-				// (optional) Do something after API prompt dismissed.
-				if ( response == "granted" ) {
-					window.addEventListener( "devicemotion", (e) => {
-						// do something for 'e' here.
-					})
-				}
-			}).catch( console.error )
-		}
-		else {
-			alert( "DeviceMotionEvent is not defined" );
-		}
-	}
-	const btn = document.getElementById( "playerBall" );
-	btn.addEventListener( "click", permission );
-	/*
-	if (navigator.permissions) {
-	
-		navigator.permissions.query({name:"accelerometer"})
-		.then(function(permissionStatus) {
-			console.log('permission status: ', this.state);
-		});
-		
-		const acl = new Accelerometer({ frequency: 60 });
-		acl.addEventListener("reading", () => {
-			console.log(`Acceleration along the X-axis ${acl.x}`);
-			console.log(`Acceleration along the Y-axis ${acl.y}`);
-			console.log(`Acceleration along the Z-axis ${acl.z}`);
-		});
-	
-		acl.start();
-		
-		DeviceMotionEvent.requestPermission(function(result) {
-			if (result === 'denied') {
-				console.log("Well fuck you too!");
-			}
-			else if (result === 'default') {
-				console.log("Hey, don't ignore me!");
-			}
-			else {
-				consoe.log("Permission granted");
-			}
-		});
-	}
-	*/
-	/*
-	var http=require('http'), express=require('express'), sio = require('socket.io')
-	, app=express(), srv = http.createServer(app);
-	
-	app.use(express.static("./static"));
-	
-	sio.listen(srv);
-	srv.listen(80);
-	
-	screen.orientation.lock(landscape-primary).catch((error) => {
-		log.textContent += `${error}\n`;
-	});
-	*/
-	
-</script>
 <script src="./js/rollout.js"></script>
 </html>
 
