@@ -1,0 +1,73 @@
+.root {
+	height: 100%;
+	width: 100%;
+	position: fixed;
+	align-items: center;
+	justify-content: center;
+}
+
+body {
+	/* So the whole viewport can be used by the square. */
+	margin: 0;
+}
+
+#sqr {
+	/* Uses the 'outer' (i.e. border-box) size when setting width and height. */
+	box-sizing: border-box;
+	width: 100vmin;
+	height: 100vmin;
+	background-color: red;
+	border: yellow 10px solid;
+	position: fixed;
+	align-items: center;
+	justify-content: center;
+	cursor: none;
+}
+
+#world {
+	position: fixed;
+	align-items: center;
+	justify-content: center;
+	width: inherit;
+	height: inherit;
+}
+
+#playerBall {
+	width: 10%;
+	height: auto;
+}
+
+.tile-row {
+	/*width: inherit;*/
+	align-self: start;
+	justify-self: start;
+	height: 10vmin;
+}
+
+.flex {
+        display: flex; 
+}
+
+.row {
+	flex-direction: row;
+}
+
+.column {
+	flex-direction: column;
+}
+
+.absolute {
+	position: absolute;
+}
+
+.tile {
+	height: inherit;
+	width: 10vmin;
+}
+
+.tile img {
+	width: 100%;
+	height: auto;
+}
+
+

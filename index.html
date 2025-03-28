@@ -4,22 +4,27 @@
 <html lang="en">
 <head>
 	<title>Rollout!</title>
-	<link rel="stylesheet" type="text/css" href="./css/rollout.css">
+	<link rel="icon" href="/games/img/rollout_icon.png">
+	<meta name="darkreader-lock">
+	<link rel="stylesheet" type="text/css" href="./css/index.css">
 </head>
 <body>
+	<!--
 	<p id="accel" style="font-size: 2rem"></p>
 	<p id="vel" style="font-size: 2rem"></p>
+	-->
 	<div class="root flex">
 		<div id="sqr" class="flex">
-			<div id="world" class="flex" style="position: relative;"></div>
-			<img id="playerBall" src="./img/playerBall0.png" style="z-index=10">
+			<div id="world" class="flex column absolute">
+				<img id="playerBall" class="absolute" src="./img/playerBall0.png" style="z-index=10">
+			</div>
 		</div>
 	</div>
 	<div>
 	</div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-<script src="./js/rollout.js"></script>
+<script src="./js/index.js"></script>
 </html>
 
 

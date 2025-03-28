@@ -36,13 +36,47 @@ let displacementY = 0.0;
 //var elem = document.body; // Make the body go full screen.
 //requestFullScreen(elem);
 
-function buildWorld(id) {
-	switch (id) {
-		case 0:
-			let obstacle_0 = document.createElement("img");
-			world.appendChild(obstacle_0);
-			break;
+function buildWorld(map) {
+	const xmlhttpReq = new XMLHttpRequest();
+	xmlhttpReq.onload = function() {
+		let map = (this.responseText);
+		let lines = map.split("\n");
+		let maxLength = 0;
+		for (let i = 0; i < lines.length; i++) {
+			if (lines[i].length > maxLength) {
+				maxLength = lines[i].length;
+			}
+		}
+		for (let i = 0; i < lines.length; i++) {
+			if (lines[i] !== "") {
+				let row = document.createElement("div");
+				row.classList.add("flex");
+				row.classList.add("row");
+				row.classList.add("tile-row");
+				for (let ii = 0; ii < lines[i].length; ii++) {
+					// Get map data by character
+					let tile = document.createElement("div");
+					tile.classList.add("tile");
+					switch (lines[i][ii].toUpperCase()) {
+						case " ":
+							tile.value = "empty";
+							break;
+						case "W":
+							tile.value = "wall";
+							let wall = document.createElement("img");
+							wall.src = "./img/rock_00.png";
+							tile.appendChild(wall);
+							break;
+					}
+					row.appendChild(tile);
+					//row.style.width = (maxLength * 10) + "vmin";
+				}
+				world.appendChild(row);
+			}
+		}
 	}
+	xmlhttpReq.open("GET", "./maps/" + map);
+	xmlhttpReq.send();
 }
 
 
@@ -55,16 +89,16 @@ function init() {
 function keydown(e) {
 	console.log(e.keyCode);
 
-	if (e.keyCode === 40) {
+	if (e.keyCode === 40 || e.keyCode === 83) {
 		y = 38;
 	}
-	else if (e.keyCode === 39) {
+	else if (e.keyCode === 39 || e.keyCode === 68) {
 		x = 38;
 	}
-	else if (e.keyCode === 38) {
+	else if (e.keyCode === 38 || e.keyCode === 87) {
 		y = -38;
 	}
-	else if (e.keyCode === 37) {
+	else if (e.keyCode === 37 || e.keyCode === 65) {
 		x = -38;
 	}
 
@@ -77,16 +111,16 @@ function keydown(e) {
 }
 
 function keyup(e) {
-	if (e.keyCode === 40) {
+	if (e.keyCode === 40 || e.keyCode === 83) {
 		y = 0;
 	}
-	else if (e.keyCode === 39) {
+	else if (e.keyCode === 39 || e.keyCode === 68) {
 		x = 0;
 	}
-	else if (e.keyCode === 38) {
+	else if (e.keyCode === 38 || e.keyCode === 87) {
 		y = 0;
 	}
-	else if (e.keyCode === 37) {
+	else if (e.keyCode === 37 || e.keyCode === 65) {
 		x = 0;
 	}
 	if (Math.abs(x) > 37 && Math.abs(y) > 37) {
@@ -152,19 +186,13 @@ function updateGamestate() {
 	if (Math.abs(y) < 8) {
 		y = 0;
 	}
-	if (x > 40) {
-		x = 40;
+	let magnitude = Math.sqrt((x*x)+(y*y));
+	if (magnitude > 40) {
+		x /= magnitude;
+		y /= magnitude;
+		x *= 40;
+		y *= 40;
 	}
-	if (x < -40) {
-		x = -40;
-	}
-	if (y > 40) {
-		y = 40;
-	}
-	if (y < -40) {
-		y = -40;
-	}
-	
 	accelX = x * compatAccelMult;
 	accelY = y * compatAccelMult;
 	
@@ -181,16 +209,16 @@ function updateGamestate() {
 	velX += (accelX * mult);
 	velY += (accelY * mult);
 	
-	displacementX -= (velX/1000);
-	displacementY -= (velY/1000);
-	document.getElementById("accel").innerHTML = "accelX = " + accelX;
-	document.getElementById("vel").innerHTML = "velX   =" + velX;
-	playerBall.style.marginLeft = (velX/100) + "%";
-	playerBall.style.marginTop = (velY/100) + "%";
-	world.style.left = displacementX + (velX/100) + "%";
-	world.style.top = displacementY + (velY/100) + "%";
+	displacementX -= (velX/2000);
+	displacementY -= (velY/2000);
+	//document.getElementById("accel").innerHTML = "accelX = " + accelX;
+	//document.getElementById("vel").innerHTML = "velX   =" + velX;
+	playerBall.style.marginLeft = (-displacementX*1) + (velX/200) + "vmin";
+	playerBall.style.marginTop = (-displacementY*1) + (velY/200) + "vmin";
+	world.style.marginLeft = displacementX + (velX/200) + "vmin";
+	world.style.marginTop = displacementY + (velY/200) + "vmin";
 }
 
 
-
+buildWorld("lobby.dat");
 
