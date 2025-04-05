@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+<head>
+	<title>Rollout!</title>
+	<link rel="icon" href="/games/img/rollout_icon.png">
+	<meta name="darkreader-lock">
+	<link rel="stylesheet" type="text/css" href="./css/index.css">
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>-->
+</head>
+<body oncontextmenu="return false;">
+	<!--
+	<p id="accel" style="font-size: 2rem"></p>
+	<p id="vel" style="font-size: 2rem"></p>
+	-->
+	<div class="root flex">
+		<div id="sqr" class="flex">
+			<div id="world" class="flex column absolute">
+			</div>
+		</div>
+		<div id="ui-root" class="flex column" style="backdrop-filter: blur(2vmin);">
+		</div>
+	</div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script src="./js/index.js"></script>
+</html>
+
+

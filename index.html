@@ -7,8 +7,9 @@
 	<link rel="icon" href="/games/img/rollout_icon.png">
 	<meta name="darkreader-lock">
 	<link rel="stylesheet" type="text/css" href="./css/index.css">
+	<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>-->
 </head>
-<body>
+<body oncontextmenu="return false;">
 	<!--
 	<p id="accel" style="font-size: 2rem"></p>
 	<p id="vel" style="font-size: 2rem"></p>
@@ -16,11 +17,22 @@
 	<div class="root flex">
 		<div id="sqr" class="flex">
 			<div id="world" class="flex column absolute">
-				<img id="playerBall" class="absolute" src="./img/playerBall0.png" style="z-index=10">
+				<div id="drop-shadow" class="absolute ball-shadow"></div>
+				<div id="drop-fire" class="flex column absolute ball-fire">
+					<img id="fire-texture" src="./img/fire.gif" class="absolute" style="width: 100%; height: auto; margin-top: 75%; opacity: 0; align-self: start; transform: rotate(180deg);"></img>
+				</div>
+				<div id="player-ball-div" class="absolute flex" style="z-index: 10;">
+					<img id="player-ball-overlay" class="align justify" src="./img/marble_overlay0.png"></img>
+				</div>
 			</div>
 		</div>
-	</div>
-	<div>
+		<div id="ui-root" class="flex column" style="backdrop-filter: blur(2vmin);">
+			<div id="nickname-div" class="flex column">
+				<label for="input-nickname" class="bauhaus" style="font-size: 3vmin; height: 25%;">Nickname</label>
+				<input id="input-nickname" type="text" maxlength="12" style="width: 75%; height: 25%; font-size: 2.5vmin;">
+				<button id="lets-get-it-started" class="bauhaus">Let's roll!</button>
+			</div>
+		</div>
 	</div>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
