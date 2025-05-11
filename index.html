@@ -27,10 +27,27 @@
 			</div>
 		</div>
 		<div id="ui-root" class="flex column" style="backdrop-filter: blur(2vmin);">
-			<div id="nickname-div" class="flex column">
-				<label for="input-nickname" class="bauhaus" style="font-size: 3vmin; height: 25%;">Nickname</label>
-				<input id="input-nickname" type="text" maxlength="12" style="width: 75%; height: 25%; font-size: 2.5vmin;">
-				<button id="lets-get-it-started" class="bauhaus">Let's roll!</button>
+			<div id="nickname-div" class="flex column center-all">
+				<div id="menu-div-start" class="absolute flex column center-all" style="width: inherit; height: inherit;">
+					<label for="input-nickname" class="bauhaus" style="font-size: 3vmin; height: 25%;">Nickname</label>
+					<input id="input-nickname" type="text" maxlength="12" style="width: 60%; height: 25%; font-size: 2.5vmin;">
+					<div id="lets-get-it-started" class="flex">
+						<p class="bauhaus">Let's roll!</p>
+					</div>
+				</div>
+				<div id="menu-div-settings" class="absolute flex column center-all" style="width: inherit; height: inherit; display: none;">
+					<p class="bauhaus" style="font-size: 3vmin; height: 15%;">Settings</p>
+					<div class="flex row" style="width: 100%; height: 3vmin; justify-content: center;">
+						<label for="toggle-shadows" class="bauhaus" style="font-size: 2vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Shadows</label>
+						<label class="toggle">
+							<input id="toggle-shadows" type="checkbox">
+							<span class="slider"></span>
+						</label>
+					</div>
+				</div>
+				<div id="settings-back-button" class="absolute flex">
+					<p id="settings-back-text" class="bauhaus">Settings</p>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -26,10 +26,30 @@ window.mobileAndTabletCheck = function() {
 };                                                                                                                                                                  
 let isMobileUser = window.mobileAndTabletCheck();
 
+function getGamepadInput() {
+	return JSON.stringify([...navigator.getGamepads()].filter(p => p).map(pad => ({
+			index: pad.index,
+			id: pad.id,
+			mapping: pad.mapping,
+			axes: pad.axes,
+			buttons: [...pad.buttons].map(b => ({
+				pressed: b.pressed,
+				touched: b.touched,
+				value: b.value
+			})),
+			vibrationActuator: pad.vibrationActuator
+		})),
+		null,
+		2
+	);
+}
+
 function GetAngleDegree(x,y) {
 	var n = 270 - (Math.atan2(-y, -x)) * 180 / Math.PI;
 	return n % 360;
 }
+
+const clamp = (val, min, max) => Math.min(Math.max(val, min), max);
 
 let sqr = document.getElementById("sqr");
 let playerBall = document.getElementById("player-ball-div");
@@ -81,29 +101,44 @@ let blurIntensity = 0;
 
 let mult = 1.0;
 
-let renderDistance = 10;
+let superSpeedThreshold = 3000;
 
-
+let cooldown_jump = 3000;
 let cooldown_dash = 7000;
 let cooldown_pound = 8000;
-let cooldown_jump = 3000;
+let cooldown_repulse = 12000;
+let cooldown_parry = 7000;
 
-
+let cooldown_jump_timer = 0;
 let cooldown_dash_timer = 0;
 let cooldown_pound_timer = 0;
-let cooldown_jump_timer = 0;
+let cooldown_repulse_timer = 0;
+let cooldown_parry_timer = 0;
 
 let indexX = 0;
 let indexY = 0;
 
+let runningBenchmark = false;
+let benchmarkTimer = 0;
+
 let renderBlur = !document.cookie.includes("blur=false");
 let renderFire = !document.cookie.includes("fire=false");
 let renderShadow = !document.cookie.includes("shadow=false");
+let graphics_terrain_high = !document.cookie.includes("hiRezTerrain=false");
+let benchmarksDuringGame = !document.cookie.includes("allowBenchmarks=false");
 
 let compatTickMult = 1.0;
 
-/*
-if (!isMobileUser && !document.cookie.includes("fps=low") && !document.cookie.includes("fps=medium")) {
+let useVibration = !document.cookie.includes("vibration=false");
+
+let idSelected = "lets-get-it-started";
+let settingsOpen = false;
+
+let targetFPS = 60;
+let update_ms = (1000/targetFPS)
+
+
+if (!document.cookie.includes("fps=low") && !document.cookie.includes("fps=medium")) {
 	compatTickMult = 1.0;
 }
 else if (document.cookie.includes("fps=low")) {
@@ -112,6 +147,7 @@ else if (document.cookie.includes("fps=low")) {
 else if (document.cookie.includes("fps=medium")) {
 	compatTickMult = 1.5;
 }
+/*
 if (compatTickMult > 1) {
 	world.style.transition = "all " + ((10*compatTickMult)/1000) + "s ease";
 	playerBall.style.transition = "all " + ((10*compatTickMult)/1000) + "s ease";
@@ -126,11 +162,28 @@ if (!renderShadow) {
 	world.removeChild(dropShadow);
 }
 
-let superSpeedThreshold = 2000;
-
-const canVibrate = window.navigator.vibrate;
+let canVibrate;
+try {
+	canVibrate = window.navigator.vibrate;
+}
+catch (error) {
+	canVibrate = false;
+}
 function vibrate(duration) {
-	if (canVibrate) window.navigator.vibrate(duration);
+	if (getGamepadInput() !== "[]" && useVibration) {
+		try {
+			navigator.getGamepads()[0].vibrationActuator.playEffect("dual-rumble", {
+				startDelay: 0,
+				duration: (duration),
+				weakMagnitude: clamp((duration/80), 0.0, 1.0),
+				strongMagnitude: clamp((duration/80), 0.0, 1.0)
+			});
+		}
+		catch (error) {}
+	}
+	else if (canVibrate && useVibration) {
+		window.navigator.vibrate(duration);
+	}
 }
 
 let mapLoaded = false;
@@ -174,7 +227,12 @@ function buildWorld(map) {
 							case "W":
 								tile.value = "wall";
 								let wall = document.createElement("img");
-								wall.src = "./img/wall_rusty_metal.jpg";
+								if (graphics_terrain_high) {
+									wall.src = "./img/wall/rusty_metal/source.jpg";
+								}
+								else {
+									wall.src = "./img/wall/rusty_metal/low.png";
+								}
 								tile.appendChild(wall);
 								break;
 							case ".":
@@ -188,7 +246,12 @@ function buildWorld(map) {
 								else {
 									yString = (((ii % 9) + yStringNum) * 8).toString();
 								}
-								ground.src = "./img/ground/mud_cracked/tile" + tileID + ".jpg";
+								if (graphics_terrain_high) {
+									ground.src = "./img/ground/mud_cracked/tile" + tileID + ".jpg";
+								}
+								else {
+									ground.src = "./img/ground/mud_cracked/low.png";
+								}
 								tile.appendChild(ground);
 								break;
 						}
@@ -219,35 +282,25 @@ function keydown(e) {
 	console.log(e.keyCode);
 
 	if (e.keyCode === 40 || e.keyCode === 83) { // S
-		y = 38;
+		y = 58;
 	}
 	else if (e.keyCode === 39 || e.keyCode === 68) { // D
-		x = 38;
+		x = 58;
 	}
 	else if (e.keyCode === 38 || e.keyCode === 87) { // W
-		y = -38;
+		y = -58;
 	}
 	else if (e.keyCode === 37 || e.keyCode === 65) { // A
-		x = -38;
+		x = -58;
 	}
 	else if (e.keyCode === 32) { // Space | Jump
-		if (cooldown_jump_timer === 0) {
-			velZ = -300;
-			cooldown_jump_timer = cooldown_jump;
-		}
+		handleInput("jump");
 	}
 	else if (e.keyCode === 74) { // J | Dash / Ground Pound / 
-		if (equipped_dash && (Math.abs(accelX) > 0 || Math.abs(accelY) > 0) && cooldown_dash_timer === 0) {
-			mult = 50;
-			blur(150, 0.25);
-			cooldown_dash_timer = cooldown_dash;
-		}
-		else if (equipped_pound && displacementZ !== 0.0 && cooldown_pound_timer === 0) {
-			velZ = 750;
-			cooldown_pound_timer = cooldown_pound;
-		}
+		handleInput("movement");
 	}
 	else if (e.keyCode === 75) { // K | Repulse / Parry / 
+		handleInput("defense");
 	}
 	else if (e.keyCode === 76) { // L | 
 	}
@@ -281,10 +334,10 @@ function keyup(e) {
 	}
 }
 
-const socket = io('http://localhost:80');
+//const socket = io('http://localhost:80');
 
-socket.on('init', handleInit);
-socket.on('gameState', handleGameState);
+//socket.on('init', handleInit);
+//socket.on('gameState', handleGameState);
 
 
 function createGameState() {
@@ -355,13 +408,13 @@ function checkCollision() {
 	try {
 		let tile = rows[indexY].childNodes[indexX];
 		if (tile.value !== tileType) {
-			console.log(tile.value);
+			//console.log(tile.value);
 		}
 		tileType = tile.value;
 	}
 	catch (error) {
 		if (tileType !== "empty") {
-			console.log("empty");
+			//console.log("empty");
 		}
 		tileType = "empty";
 	}
@@ -464,45 +517,178 @@ document.getElementById("lets-get-it-started").disabled = "true";
 
 if (document.cookie.includes("nick")) {
 	document.getElementById("input-nickname").value = cookies.nick;
-	document.getElementById("lets-get-it-started").disabled = "";
+	document.getElementById("lets-get-it-started").classList.remove("disabled-start");
 }
 
 document.getElementById("input-nickname").addEventListener("input", function() {
 	if (document.getElementById("input-nickname").value.length > 2) {
-		document.getElementById("lets-get-it-started").disabled = "";
+		document.getElementById("lets-get-it-started").classList.remove("disabled-start");
 	}
 	else {
-		document.getElementById("lets-get-it-started").disabled = "true";
+		document.getElementById("lets-get-it-started").classList.add("disabled-start");
 	}
 });
 
-let alreadyStarted = false;
-document.getElementById("lets-get-it-started").addEventListener("click", function() {
+function startEngine() {
 	document.cookie = "nick=" + document.getElementById("input-nickname").value;
 	document.getElementById("ui-root").removeChild(document.getElementById("nickname-div"));
 	if (!alreadyStarted) {
-		var Interval = window.setInterval(updateGamestate, (10 * compatTickMult));
+		var Interval = window.setInterval(updateGamestate, (update_ms * compatTickMult));
 		alreadyStarted = true;
-		navigator.vibrate([10,10,10,10,10,10,10,10,10,10]);
+		if (getGamepadInput !== "[]") {
+			vibrate(100);
+		}
+		else if (canVibrate && useVibrate) {
+			navigator.vibrate([10,10,10,10,10,10,10,10,10,10]);
+		}
+		clearInterval(ControllerInput);
 	}
+}
+
+let alreadyStarted = false;
+document.getElementById("lets-get-it-started").addEventListener("click", function() {
+	startEngine();
 });
 
 document.getElementById("input-nickname").addEventListener("keyup", ({key}) => {
 	if (key === "Enter") {
-		// Do work
-		document.cookie = "nick=" + document.getElementById("input-nickname").value;
-		document.getElementById("ui-root").removeChild(document.getElementById("nickname-div"));
-		if (!alreadyStarted) {
-			var Interval = window.setInterval(updateGamestate, (10 * compatTickMult));
-			alreadyStarted = true;
-			navigator.vibrate([10,10,10,10,10,10,10,10,10,10]);
-		}
+		startEngine();
 	}
 });
 
+function benchmark(duration) {
+	if (duration < 1) {
+		duration = 1;
+	}
+	runningBenchmark = true;
+	benchmarkTimer = 0;
+	setTimeout(function() {
+		runningBenchmark = false;
+		if (benchmarkTimer <= (750 * duration)) {
+			console.log("Benchmark found strong evidence of slowdown (" + (benchmarkTimer/(10 * duration)) + "% gamespeed)");
+		}
+		else if (benchmarkTimer <= (975 * duration)) {
+			console.log("Benchmark found evidence of possible slowdown (" + (benchmarkTimer/(10 * duration)) + "% gamespeed)");
+		}
+		else {
+			console.log("Benchmark found no substantial evidence of slowdown (" + (benchmarkTimer/(10 * duration)) + "% gamespeed)");
+		}
+	}, (duration * 1000));
+}
+setTimeout(function() {
+	benchmark(2);
+}, 2000);
+
+let nickDiv = document.getElementById("nickname-div");
+let menuStart = document.getElementById("menu-div-start");
+let menuSettings = document.getElementById("menu-div-settings");
+let settings = document.getElementById("settings-back-button");
+settings.addEventListener("click", function() {
+	if (!settingsOpen) {
+		settingsOpen = true;
+		settings.style.marginLeft = "-30vmin";
+		settings.style.marginTop = "-47vmin";
+		document.getElementById("settings-back-text").innerText = "Back";
+		menuStart.style.opacity = "0";
+		menuSettings.style.display = "flex";
+		menuSettings.style.opacity = "100%";
+		nickDiv.style.height = "50vmin";
+		setTimeout(function() {
+			menuStart.style.display = "none";
+		}, 200);
+	}
+	else {
+		settingsOpen = false;
+		settings.style.marginLeft = "30vmin";
+		settings.style.marginTop = "-22vmin";
+		document.getElementById("settings-back-text").innerText = "Settings";
+		menuStart.style.display = "flex";
+		menuStart.style.opacity = "100%";
+		menuSettings.style.opacity = "0";
+		nickDiv.style.height = "25vmin";
+		setTimeout(function() {
+			menuSettings.style.display = "none";
+		}, 200);
+	}
+});
+
+if (isMobileUser) {
+	nickDiv.style.transform = "scale(1.9)";
+}
+
+function menuControllerHandler() {
+	if (runningBenchmark) {
+		benchmarkTimer += update_ms * compatTickMult;
+	}
+	if (getGamepadInput() !== "[]") {
+		if (JSON.parse(getGamepadInput())[0].buttons[1].pressed) { // SwitchPro: A
+			switch (idSelected) {
+				default:
+					while (JSON.parse(getGamepadInput())[0].buttons[1].pressed) {}
+					startEngine();
+					break;
+			}
+		}
+	}
+}
+
+var ControllerInput = window.setInterval(menuControllerHandler, update_ms * compatTickMult);
+
+function handleInput(input) {
+	switch (input.toLowerCase()) {
+		case "jump":
+			if (cooldown_jump_timer === 0) {
+				velZ = -300;
+				cooldown_jump_timer = cooldown_jump;
+			}
+			break;
+		case "movement":
+			if (equipped_dash && (Math.abs(accelX) > 0 || Math.abs(accelY) > 0) && cooldown_dash_timer === 0) {
+				mult = 50;
+				blur(150, 0.25);
+				cooldown_dash_timer = cooldown_dash;
+			}
+			else if (equipped_pound && displacementZ !== 0.0 && cooldown_pound_timer === 0) {
+				velZ = 750;
+				cooldown_pound_timer = cooldown_pound;
+			}
+			break;
+		case "defense":
+			if (equipped_repulse && cooldown_repulse_timer === 0) {
+				cooldown_repulse_timer = cooldown_repulse;
+			}
+			else if (equipped_parry && cooldown_parry_timer === 0) {
+				cooldown_parry_timer = cooldown_parry;
+			}
+			break;
+	}
+}
 
 
 function updateGamestate() {
+
+	if (benchmarksDuringGame) {
+		benchmarkTimer += (update_ms * compatTickMult);
+		if (benchmarkTimer > 10000) {
+			benchmark(5);
+		}
+	}
+
+	if (getGamepadInput !== "[]") {
+		try {
+			x = JSON.parse(getGamepadInput())[0].axes[0] * 59;
+			y = JSON.parse(getGamepadInput())[0].axes[1] * 59;
+
+			if (JSON.parse(getGamepadInput())[0].buttons[1].pressed && cooldown_jump_timer === 0) { // SwitchPro: A
+				handleInput("jump");
+			}
+			if (JSON.parse(getGamepadInput())[0].buttons[0].pressed) { // SwitchPro: B
+				handleInput("movement");
+			}
+
+		}
+		catch (error) {}
+	}
 
 	let onGround;
 	if ((displacementZ <= 0 && tileType !== "empty") || (displacementZ <= 2 && tileType === "wall") || (displacementZ <= 2 && tileType === "destructible")) {
@@ -523,16 +709,16 @@ function updateGamestate() {
 			x *= 20 * mult;
 			y *= 20 * mult;
 		}
-		x *= 2;
-		y *= 2;
+		x *= 3;
+		y *= 3;
 	}
 	accelX = x * compatAccelMult;
 	accelY = y * compatAccelMult;
-	accelZ = 5;
+	accelZ = 7;
 	
-	velX /= 1.01;
-	velY /= 1.01;
-	velZ /= 1.01;
+	velX /= (1.00 + (0.01 * compatTickMult));
+	velY /= (1.00 + (0.01 * compatTickMult));
+	velZ /= (1.00 + (0.01 * compatTickMult));
 	
 	if (Math.abs(velX) < 0.01) {
 		velX = 0;
@@ -544,10 +730,10 @@ function updateGamestate() {
 		velZ = 0;
 	}
 
-	velX += (accelX * mult);
-	velY += (accelY * mult);
+	velX += (accelX * mult * compatTickMult);
+	velY += (accelY * mult * compatTickMult);
 	if (!onGround) {
-		velZ += (accelZ);
+		velZ += (accelZ * compatTickMult);
 	}
 	
 	displacementX -= ((velX/2000) * compatTickMult);
@@ -654,19 +840,19 @@ function updateGamestate() {
 	}
 
 	if (cooldown_dash_timer > 0) {
-		cooldown_dash_timer -= (10 * compatTickMult);
+		cooldown_dash_timer -= (update_ms * compatTickMult);
 	}
 	else {
 		cooldown_dash_timer = 0;
 	}
 	if (cooldown_pound_timer > 0) {
-		cooldown_pound_timer -= (10 * compatTickMult);
+		cooldown_pound_timer -= (update_ms * compatTickMult);
 	}
 	else {
 		cooldown_pound_timer = 0;
 	}
 	if (cooldown_jump_timer > 0) {
-		cooldown_jump_timer -= (10 * compatTickMult);
+		cooldown_jump_timer -= (update_ms * compatTickMult);
 	}
 	else {
 		cooldown_jump_timer = 0;
@@ -677,7 +863,7 @@ function updateGamestate() {
 			ratioBlur = 0.5;
 		}
 		ui.style.backdropFilter = "blur(" + (ratioBlur * blurIntensity) + "vmin)";
-		blurTimer -= (10 * compatTickMult);
+		blurTimer -= (update_ms * compatTickMult);
 	}
 	else {
 		ui.style.backdropFilter = "";

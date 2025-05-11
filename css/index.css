@@ -37,12 +37,45 @@ body {
 }
 
 #nickname-div {
-	width: 25vmin;
-	height: 15vmin;
-	justify-content: center;
-	align-items: center;
+	width: 40vmin;
+	height: 25vmin;
 	background-image: linear-gradient(to top, #AAAAAA 0%, #DDDDDD 100%);
 	border-radius: 1vmin;
+	transition: all 0.2s ease;
+}
+
+.center-all {
+	justify-content: center;
+	align-items: center;
+}
+
+#settings-back-button {
+	position: absolute;
+	width: 10vmin;
+	height: 3vmin;
+	background-image: linear-gradient(to top, #CCCCCC 0%, #EEEEEE 100%);
+	border-radius: 1vmin;
+	border-style: solid;
+	border-width: thin;
+	border-color: #888888;
+	margin-left: 30vmin;
+	margin-top: -22vmin;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.2s ease;
+	cursor: pointer;
+}
+
+#settings-back-button p {
+	font-size: 2vmin;
+	transition: all 0.2s ease;
+	color: #444444;
+}
+
+#settings-back-button:hover p {
+	font-size: 2.2vmin;
+	color: #000000;
 }
 
 #lets-get-it-started {
@@ -50,15 +83,57 @@ body {
 	height: 25%;
 	background-image: linear-gradient(to top, #AE8A52 0%, #C89068 100%);
 	border-radius: 1vmin;
-	font-size: 2.5vmin;
+	border-style: outset;
 	transition: all 0.2s ease;
 	cursor: pointer;
+	overflow: hidden;
+	justify-content: center;
+	align-items: center;
+	font-size: 3.2vmin;
 }
-#lets-get-it-started:disabled {
-	background-image: linear-gradient(to top, #888888 0%, #BBBBBB 100%);
-	font-size: 1.5vmin;
-	width: 35%;
-	cursor: default;
+#lets-get-it-started p::after {
+	position: absolute;
+	content: "";
+	display: block;
+	margin-left: -10vmin;
+	margin-top: -5vmin;
+	width: 0;
+	height: 10vmin;
+	transform: rotate(-20deg);
+	box-shadow: 0px 0px 2vmin 2vmin #FFFFFF88;
+}
+#lets-get-it-started p {
+	position: relative;
+	transition: all 0.2s ease;
+}
+#lets-get-it-started:hover p {
+	font-size: 3.5vmin;
+}
+#lets-get-it-started:hover p::after {
+	animation: shiningEffect 0.3s linear 1;
+}
+.disabled-start {
+	background-image: linear-gradient(to top, #888888 0%, #BBBBBB 100%) !important;
+	font-size: 2vmin !important;
+	border-style: inset !important;
+	width: 35% !important;
+	cursor: default !important;
+}
+
+#menu-div-start {
+	transition: opacity 0.2s ease;
+}
+#menu-div-settings {
+	transition: opacity 0.2s ease;
+}
+
+@keyframes shiningEffect {
+	0% {
+		margin-left: -10vmin;
+	}
+	100% {
+		margin-left: 40vmin;
+	}
 }
 
 .bauhaus {
@@ -142,6 +217,7 @@ body {
 	width: 101%;
 	height: 101%;
 	image-rendering: pixelated;
+	pointer-events: none;
 }
 
 .align {
@@ -151,5 +227,59 @@ body {
 .justify {
 	justify-self: center;
 }
+
+
+
+
+
+
+
+
+.toggle {
+	position: relative;
+	display: inline-block;
+	width: 15vmin;
+	height: 9vmin;
+}
+
+.toggle input {
+	display: none;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	right: auto;
+	bottom: 0;
+	width: 5vmin;
+	height: 3vmin;
+	background-color: #292E1E;
+	transition: 0.4s;
+	border-radius: 4vmin;
+	border-style: inset;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 2.5vmin;
+	width: 2.5vmin;
+	left: 0.25vmin;
+	bottom: 0.25vmin;
+	background-color: #FFFFFF;
+	transition: all 0.2s ease;
+	border-radius: 50%;
+}
+
+input:checked + .slider {
+	background-image: linear-gradient(to left, #AE8A52 0%, #C89068 100%);
+}
+
+input:checked + .slider:before {
+	transform: translateX(2vmin);
+}
+
+
 
 
