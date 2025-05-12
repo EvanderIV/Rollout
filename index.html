@@ -31,19 +31,45 @@
 				<div id="menu-div-start" class="absolute flex column center-all" style="width: inherit; height: inherit;">
 					<label for="input-nickname" class="bauhaus" style="font-size: 3vmin; height: 25%;">Nickname</label>
 					<input id="input-nickname" type="text" maxlength="12" style="width: 60%; height: 25%; font-size: 2.5vmin;">
-					<div id="lets-get-it-started" class="flex">
+					<div id="lets-get-it-started" class="flex disabled-start">
 						<p class="bauhaus">Let's roll!</p>
 					</div>
 				</div>
-				<div id="menu-div-settings" class="absolute flex column center-all" style="width: inherit; height: inherit; display: none;">
+				<div id="menu-div-settings" class="absolute flex column center-all" style="width: inherit; height: inherit; display: none; justify-content: flex-start;">
 					<p class="bauhaus" style="font-size: 3vmin; height: 15%;">Settings</p>
-					<div class="flex row" style="width: 100%; height: 3vmin; justify-content: center;">
+					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
 						<label for="toggle-shadows" class="bauhaus" style="font-size: 2vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Shadows</label>
 						<label class="toggle">
-							<input id="toggle-shadows" type="checkbox">
+							<input id="toggle-shadows" type="checkbox" checked>
 							<span class="slider"></span>
 						</label>
 					</div>
+					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
+						<label for="toggle-textures" class="bauhaus" style="font-size: 2vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">High Res Textures</label>
+						<label class="toggle">
+							<input id="toggle-textures" type="checkbox" checked>
+							<span class="slider"></span>
+						</label>
+					</div>
+					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
+						<label for="toggle-speedfx" class="bauhaus" style="font-size: 2vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Speed Effects</label>
+						<label class="toggle">
+							<input id="toggle-speedfx" type="checkbox" checked>
+							<span class="slider"></span>
+						</label>
+					</div>
+					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
+						<label for="toggle-rumble" class="bauhaus" style="font-size: 2vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Rumble</label>
+						<label class="toggle">
+							<input id="toggle-rumble" type="checkbox" checked>
+							<span class="slider"></span>
+						</label>
+					</div>
+					<!--
+					<div id="apply-settings" class="flex disabled-start">
+						<p class="bauhaus">Refresh to Apply Changes</p>
+					</div>
+					-->
 				</div>
 				<div id="settings-back-button" class="absolute flex">
 					<p id="settings-back-text" class="bauhaus">Settings</p>

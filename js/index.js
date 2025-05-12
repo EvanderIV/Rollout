@@ -157,10 +157,7 @@ if (compatTickMult > 1) {
 }
 */
 
-if (!renderShadow) {
-	//$("#drop-shadow").remove();
-	world.removeChild(dropShadow);
-}
+
 
 let canVibrate;
 try {
@@ -199,6 +196,49 @@ function blur(duration, intensity) {
 function buildWorld(map) {
 	const xmlhttpReq = new XMLHttpRequest();
 	xmlhttpReq.onload = function() {
+		// Clear the world, but not the player elements
+		for (let child = world.children.length - 1; child >= 0; child--) {
+			if (world.children[child].id.includes("row-")) {
+				world.removeChild(world.children[child]);
+			}
+		}
+		/*
+		// Add the player elements first
+		dropShadow = document.createElement("div");
+		dropShadow.id = "drop-shadow";
+		dropShadow.className = "absolute ball-shadow";
+		world.appendChild(dropShadow);
+
+		fire = document.createElement("div");
+		fire.id = "drop-fire";
+		fire.className = "flex column absolute ball-fire";
+		fire = document.createElement("img");
+		fireTexture.id = "fire-texture";
+		fireTexture.src = "./img/fire.gif";
+		fireTexture.className = "absolute";
+		fireTexture.style.width = "100%";
+		fireTexture.style.height = "auto";
+		fireTexture.style.marginTop = "75%";
+		fireTexture.style.opacity = "0";
+		fireTexture.style.alignSelf = "start";
+		fireTexture.style.transform = "rotate(180deg)";
+		fire.appendChild(fireTexture);
+		world.appendChild(fire);
+
+		let playerBall = document.createElement("div");
+		playerBall.id = "player-ball-div";
+		playerBall.className = "absolute flex";
+		playerBall.style.zIndex = "10";
+		playerBallOverlay = document.createElement("img");
+		playerBallOverlay.id = "player-ball-overlay";
+		playerBallOverlay.className = "align justify";
+		playerBallOverlay.src = "./img/marble_overlay0.png";
+		playerBall.appendChild(playerBallOverlay);
+		world.appendChild(playerBall);
+		*/
+
+		// Add the map elements
+
 		let map = (this.responseText);
 		lines = map.split("\n");
 		maxHeight = lines.length;
@@ -210,12 +250,14 @@ function buildWorld(map) {
 		for (let i = 0; i < lines.length; i++) {
 			if (lines[i] !== "") {
 				let row = document.createElement("div");
+				row.id = "row-" + i;
 				row.classList.add("flex");
 				row.classList.add("row");
 				row.classList.add("tile-row");
 				for (let ii = 0; ii < maxTiles; ii++) {
 					// Get map data by character
 					let tile = document.createElement("div");
+					tile.id = "tile-" + ii + "-" + i;
 					tile.classList.add("tile");
 					tile.style.width = (100/maxTiles) + "%";
 					if (ii < lines[i].length) {
@@ -518,18 +560,29 @@ document.getElementById("lets-get-it-started").disabled = "true";
 if (document.cookie.includes("nick")) {
 	document.getElementById("input-nickname").value = cookies.nick;
 	document.getElementById("lets-get-it-started").classList.remove("disabled-start");
+	document.getElementById("lets-get-it-started").classList.add("valid");
 }
 
 document.getElementById("input-nickname").addEventListener("input", function() {
 	if (document.getElementById("input-nickname").value.length > 2) {
 		document.getElementById("lets-get-it-started").classList.remove("disabled-start");
+		document.getElementById("lets-get-it-started").classList.add("valid");
 	}
 	else {
 		document.getElementById("lets-get-it-started").classList.add("disabled-start");
+		document.getElementById("lets-get-it-started").classList.remove("valid");
 	}
 });
 
 function startEngine() {
+	if (!renderShadow) {
+		//$("#drop-shadow").remove();
+		world.removeChild(dropShadow);
+	}
+	if (!renderFire) {
+		//$("#drop-fire").remove();
+		world.removeChild(fire);
+	}
 	document.cookie = "nick=" + document.getElementById("input-nickname").value;
 	document.getElementById("ui-root").removeChild(document.getElementById("nickname-div"));
 	if (!alreadyStarted) {
@@ -631,6 +684,52 @@ function menuControllerHandler() {
 		}
 	}
 }
+
+
+
+
+
+
+
+
+let shadowsToggle = document.getElementById("toggle-shadows");
+let texturesToggle = document.getElementById("toggle-textures");
+let speedfxToggle = document.getElementById("toggle-speedfx");
+let rumbleToggle = document.getElementById("toggle-rumble");
+
+shadowsToggle.checked = renderShadow;
+texturesToggle.checked = graphics_terrain_high;
+speedfxToggle.checked = renderBlur && renderFire;
+rumbleToggle.checked = useVibration;
+
+shadowsToggle.addEventListener("click", function() {
+	renderShadow = shadowsToggle.checked;
+	document.cookie = "shadow=" + shadowsToggle.checked;
+});
+
+texturesToggle.addEventListener("click", function() {
+	graphics_terrain_high = texturesToggle.checked;
+	document.cookie = "hiRezTerrain=" + texturesToggle.checked;
+	if (mapLoaded) {
+		buildWorld("lobby.dat");
+	}
+});
+
+speedfxToggle.addEventListener("click", function() {
+	renderBlur = speedfxToggle.checked;
+	renderFire = speedfxToggle.checked;
+	document.cookie = "blur=" + speedfxToggle.checked;
+	document.cookie = "fire=" + speedfxToggle.checked;
+});
+
+rumbleToggle.addEventListener("click", function() {
+	useVibration = rumbleToggle.checked;
+	document.cookie = "vibration=" + rumbleToggle.checked;
+});
+
+
+
+
 
 var ControllerInput = window.setInterval(menuControllerHandler, update_ms * compatTickMult);
 

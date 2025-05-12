@@ -90,6 +90,7 @@ body {
 	justify-content: center;
 	align-items: center;
 	font-size: 3.2vmin;
+	margin-top: 1vmin;
 }
 #lets-get-it-started p::after {
 	position: absolute;
@@ -109,15 +110,18 @@ body {
 #lets-get-it-started:hover p {
 	font-size: 3.5vmin;
 }
-#lets-get-it-started:hover p::after {
+#lets-get-it-started.valid:hover p::after {
 	animation: shiningEffect 0.3s linear 1;
 }
-.disabled-start {
+#lets-get-it-started.disabled-start {
 	background-image: linear-gradient(to top, #888888 0%, #BBBBBB 100%) !important;
-	font-size: 2vmin !important;
 	border-style: inset !important;
 	width: 35% !important;
 	cursor: default !important;
+}
+
+#lets-get-it-started.disabled-start p {
+	font-size: 2vmin !important;
 }
 
 #menu-div-start {
@@ -135,6 +139,63 @@ body {
 		margin-left: 40vmin;
 	}
 }
+
+#apply-settings {
+	width: 80%;
+	height: 7%;
+	background-image: linear-gradient(to top, #AE8A52 0%, #C89068 100%);
+	border-radius: 1vmin;
+	border-style: outset;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	overflow: hidden;
+	justify-content: center;
+	align-items: center;
+	font-size: 2.2vmin;
+	justify-self: flex-end;
+	margin-top: auto;
+	margin-bottom: 2vmin;
+}
+#apply-settings p::after {
+	position: absolute;
+	content: "";
+	display: block;
+	margin-left: -10vmin;
+	margin-top: -5vmin;
+	width: 0;
+	height: 10vmin;
+	transform: rotate(-20deg);
+	box-shadow: 0px 0px 2vmin 2vmin #FFFFFF88;
+}
+#apply-settings p {
+	position: relative;
+	transition: all 0.2s ease;
+}
+#apply-settings:hover p {
+	font-size: 2.5vmin;
+}
+#apply-settings.valid:hover p::after {
+	animation: shiningEffect 0.3s linear 1;
+}
+#apply-settings.disabled-start {
+	background-image: linear-gradient(to top, #888888 0%, #BBBBBB 100%) !important;
+	border-style: inset !important;
+	width: 60% !important;
+	cursor: default !important;
+}
+#apply-settings.disabled-start p {
+	font-size: 2vmin !important;
+	color: #444444 !important;
+}
+
+.setting-item {
+	margin-left: -10vmin;
+}
+
+
+
+
+
 
 .bauhaus {
 	font-family: "bauhaus";
@@ -238,8 +299,8 @@ body {
 .toggle {
 	position: relative;
 	display: inline-block;
-	width: 15vmin;
-	height: 9vmin;
+	width: 5.3vmin;
+	height: 3.3vmin;
 }
 
 .toggle input {
