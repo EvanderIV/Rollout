@@ -39,9 +39,25 @@ body {
 #nickname-div {
 	width: 40vmin;
 	height: 25vmin;
+	display: flex;
 	background-image: linear-gradient(to top, #AAAAAA 0%, #DDDDDD 100%);
 	border-radius: 1vmin;
 	transition: all 0.2s ease;
+	opacity: 1;
+	pointer-events: auto;
+	z-index: 100;
+}
+
+#nickname-div.hidden {
+	opacity: 0;
+	pointer-events: none;
+	visibility: hidden;
+}
+
+#nickname-div.visible {
+	opacity: 1;
+	pointer-events: auto;
+	visibility: visible;
 }
 
 .center-all {
@@ -129,6 +145,7 @@ body {
 }
 #menu-div-settings {
 	transition: opacity 0.2s ease;
+	overflow: hidden;
 }
 
 @keyframes shiningEffect {
@@ -340,6 +357,184 @@ input:checked + .slider {
 input:checked + .slider:before {
 	transform: translateX(2vmin);
 }
+
+/* For advanced settings switches */
+.advanced-toggle {
+	position: relative;
+	display: inline-block;
+	width: 2.8vmin;
+	height: 1.8vmin;
+}
+
+.advanced-toggle input {
+	display: none;
+}
+
+.advanced-slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	right: auto;
+	bottom: 0;
+	width: 2.5vmin;
+	height: 1.5vmin;
+	background-color: #292E1E;
+	transition: 0.4s;
+	border-radius: 4vmin;
+	border-style: inset;
+}
+
+.advanced-slider:before {
+	position: absolute;
+	content: "";
+	height: 1.25vmin;
+	width: 1.25vmin;
+	left: 0.125vmin;
+	bottom: 0.105vmin;
+	background-color: #FFFFFF;
+	transition: all 0.2s ease;
+	border-radius: 50%;
+}
+
+input:checked + .advanced-slider {
+	background-image: linear-gradient(to left, #AE8A52 0%, #C89068 100%);
+}
+
+input:checked + .advanced-slider:before {
+	transform: translateX(1vmin);
+}
+
+input:disabled + .advanced-slider {
+    background-color: #666666;
+    cursor: not-allowed;
+}
+
+input:disabled + .advanced-slider:before {
+    background-color: #999999;
+}
+
+/* Disabled toggle styles */
+input:disabled + .advanced-slider {
+    background-color: #666666 !important;
+    cursor: not-allowed;
+}
+
+input:disabled + .advanced-slider:before {
+    background-color: #999999;
+}
+
+input:disabled ~ label {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.performance-graph {
+	position: fixed;
+    bottom: 2vmin;
+    left: 2vmin;
+    width: 30vmin;
+    height: 15vmin;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 1vmin;
+    backdrop-filter: blur(0.5vmin);
+    display: none;
+}
+
+.performance-graph canvas {
+	position: absolute;
+	margin-top: 2.5%;
+    width: 100%;
+    height: 97.5%;
+}
+
+.menu-selectable {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.menu-selectable.selected {
+    transform: scale(1.1);
+    box-shadow: 0 0 1vmin rgba(200, 144, 104, 0.5);
+}
+
+.menu-selectable.selected::before {
+	content: "";
+	display: none;
+}
+
+.menu-selectable.selected::before {
+    content: "";
+    position: absolute;
+    left: -3vmin;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2vmin;
+    height: 2vmin;
+    background-image: url("../img/gamepad_ui.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* Virtual keyboard styles */
+.virtual-keyboard {
+    position: fixed;
+    bottom: 10vmin;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(to top, #AAAAAA 0%, #DDDDDD 100%);
+    padding: 1vmin;
+    border-radius: 1vmin;
+    display: none;
+    flex-direction: column;
+    gap: 0.5vmin;
+    z-index: 1000;
+    box-shadow: 0 0 2vmin rgba(0, 0, 0, 0.3);
+}
+
+.keyboard-row {
+    display: flex;
+    gap: 0.5vmin;
+    justify-content: center;
+}
+
+.key {
+    padding: 1vmin 2vmin;
+    background: linear-gradient(to top, #888888 0%, #BBBBBB 100%);
+    border-radius: 0.5vmin;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: "bauhaus";
+    color: #444444;
+    user-select: none;
+}
+
+.key.selected {
+    transform: scale(1.1);
+    background: linear-gradient(to top, #AE8A52 0%, #C89068 100%);
+    color: #FFFFFF;
+    box-shadow: 0 0 1vmin rgba(200, 144, 104, 0.5);
+}
+
+.key.special-key {
+    padding: 1vmin 3vmin;
+    font-size: 0.9em;
+    background: linear-gradient(to top, #666666 0%, #999999 100%);
+    margin: 0 0.5vmin;
+    min-width: 8vmin;
+    text-align: center;
+}
+
+.key.special-key.selected {
+    background: linear-gradient(to top, #8A6832 0%, #A87048 100%);
+}
+
+.key.special-key[data-key="2"][data-row="4"] {
+    font-size: 0.8em;
+    padding: 1vmin 1.5vmin;
+}
+
+
+
 
 
 

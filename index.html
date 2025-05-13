@@ -13,8 +13,7 @@
 	<!--
 	<p id="accel" style="font-size: 2rem"></p>
 	<p id="vel" style="font-size: 2rem"></p>
-	-->
-	<div class="root flex">
+	-->	<div class="root flex">
 		<div id="sqr" class="flex">
 			<div id="world" class="flex column absolute">
 				<div id="drop-shadow" class="absolute ball-shadow"></div>
@@ -22,11 +21,13 @@
 					<img id="fire-texture" src="./img/fire.gif" class="absolute" style="width: 100%; height: auto; margin-top: 75%; opacity: 0; align-self: start; transform: rotate(180deg);"></img>
 				</div>
 				<div id="player-ball-div" class="absolute flex" style="z-index: 10;">
-					<img id="player-ball-overlay" class="align justify" src="./img/marble_overlay0.png"></img>
-				</div>
+					<img id="player-ball-overlay" class="align justify" src="./img/marble_overlay0.png"></img>				</div>
 			</div>
 		</div>
 		<div id="ui-root" class="flex column" style="backdrop-filter: blur(2vmin);">
+			<div id="performance-graph" class="performance-graph">
+				<canvas id="perf-canvas"></canvas>
+			</div>
 			<div id="nickname-div" class="flex column center-all">
 				<div id="menu-div-start" class="absolute flex column center-all" style="width: inherit; height: inherit;">
 					<label for="input-nickname" class="bauhaus" style="font-size: 3vmin; height: 25%;">Nickname</label>
@@ -59,10 +60,32 @@
 						</label>
 					</div>
 					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
+						<label for="toggle-blur" class="bauhaus" style="font-size: 2vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Blur Effects</label>
+						<label class="toggle">
+							<input id="toggle-blur" type="checkbox" checked>
+							<span class="slider"></span>
+						</label>
+					</div>
+					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
 						<label for="toggle-rumble" class="bauhaus" style="font-size: 2vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Rumble</label>
 						<label class="toggle">
 							<input id="toggle-rumble" type="checkbox" checked>
 							<span class="slider"></span>
+						</label>
+					</div>
+					<p class="bauhaus" style="font-size: 2vmin;">Advanced</p>
+					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
+						<label for="toggle-benchmarks" class="bauhaus" style="font-size: 1vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Benchmarks During Gameplay</label>
+						<label class="advanced-toggle">
+							<input id="toggle-benchmarks" type="checkbox" checked>
+							<span class="advanced-slider"></span>
+						</label>
+					</div>
+					<div class="flex row setting-item" style="width: 100%; height: 3vmin; justify-content: center; margin-bottom: 1vmin;">
+						<label for="toggle-graphs" class="bauhaus" style="font-size: 1vmin; width: 20vmin; text-align: right; margin-right: 2vmin;">Performance Graphs</label>
+						<label class="advanced-toggle">
+							<input id="toggle-graphs" type="checkbox" checked>
+							<span class="advanced-slider"></span>
 						</label>
 					</div>
 					<!--
